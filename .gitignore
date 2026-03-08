@@ -6,6 +6,7 @@ __pycache__
 
 # Temporary data
 /data
+/model
 .DS_Store
 ._*
 /logs
