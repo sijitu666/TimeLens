@@ -209,6 +209,8 @@ The evaluation script is [`scripts/eval_timelens_bench.sh`](./scripts/eval_timel
 **Example 1**: Evaluate TimeLens-8B (default settings)
 ```bash
 model_path="TencentARC/TimeLens-8B" bash scripts/eval_timelens_bench.sh
+
+CUDA_VISIBLE_DEVICES=2,3,5,6 FPS=1 total_token=8192 model_path="/home/zhiwei/robotics/vlm/TimeLens/model/TimeLens-8B" bash scripts/eval_timelens_bench.sh
 ```
 
 **Example 2**: Evaluate TimeLens-7B on specific datasets with specific GPUs
@@ -338,6 +340,9 @@ hf download JungleGym/TimeLens-Qwen3-VL-8B-SFT \
 
 ```bash
 bash train_scripts/run_sft_qwen3_8b.sh \
+  --model_path "/path/to/Qwen3-VL-8B-Instruct"
+
+CUDA_VISIBLE_DEVICES=2,3,5,6 bash train_scripts/run_sft_qwen3_8b.sh \
   --model_path "/path/to/Qwen3-VL-8B-Instruct"
 ```
 

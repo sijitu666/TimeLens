@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "TimeLens: eval_dataloader (single GPU debug)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/evaluation/eval_dataloader.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}",
+        "CUDA_VISIBLE_DEVICES": "2"
+      },
+      "args": [
+        "--dataset",
+        "charades-timelens",
+        "--pred_path",
+        "${workspaceFolder}/logs/debug_single_gpu/charades",
+        "--model_path",
+        "/home/zhiwei/robotics/vlm/TimeLens/model/TimeLens-8B",
+        "--min_tokens",
+        "64",
+        "--total_tokens",
+        "14336",
+        "--fps",
+        "1",
+        "--chunk",
+        "1",
+        "--index",
+        "0"
+      ]
+    }
+  ]
+}
