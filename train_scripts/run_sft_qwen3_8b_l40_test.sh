@@ -69,6 +69,7 @@ echo "Single GPU test mode"
 echo "========================================"
 
 # Calculate derived parameters
+grad_accum_steps=$((global_batch_size / (batch_per_device * num_devices)))
 if [[ -z "${fps_max_frames}" ]]; then
   fps_max_frames=$((total_tokens / min_tokens * 2))
 fi
@@ -112,7 +113,7 @@ deepspeed --num_gpus=1 training/train/train_sft_timelens.py \
   --lr_scheduler_type cosine \
   --num_train_epochs "${epochs}" \
   --per_device_train_batch_size "${batch_per_device}" \
-  --gradient_accumulation_steps 8 \
+  --gradient_accumulation_steps "${grad_accum_steps}" \
   --logging_steps 1 \
   --save_strategy steps \
   --save_steps 10 \

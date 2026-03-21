@@ -34,7 +34,7 @@ epochs=1
 target_size=30000
 
 # DeepSpeed ZeRO-3 config for L40 (with offloading)
-deepspeed_config="scripts/zero3.json"
+deepspeed_config="scripts/zero3_l40.json"
 output_root="output/TimeLens-8B/sft"
 report_to="none"
 

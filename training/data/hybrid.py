@@ -39,10 +39,13 @@ class HybridDataset(Dataset):
             elif name == "filtered_hybrid":
                 filter_args = _build_default_filter_args(data_args.target_size)
                 dataset_name = "filtered_hybrid"
+            elif name == "egcot_jsonl":
+                filter_args = _build_default_filter_args(data_args.target_size)
+                dataset_name = "egcot_jsonl"
             else:
                 raise ValueError(
                     f"Unsupported dataset name: {name}. "
-                    "Supported: gemini_refined_data, timelens-100k, filtered_hybrid."
+                    "Supported: gemini_refined_data, timelens-100k, filtered_hybrid, egcot_jsonl."
                 )
 
             datasets.append(

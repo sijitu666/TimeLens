@@ -211,6 +211,9 @@ def train():
         model_args.model_name_or_path, do_resize=False, trust_remote_code=True
     )
 
+    if getattr(processor, "tokenizer", None) is not None:
+        processor.tokenizer.model_max_length = int(training_args.max_seq_length)
+
     if training_args.bits in [4, 8]:
         from peft.tuners.lora import LoraLayer
 

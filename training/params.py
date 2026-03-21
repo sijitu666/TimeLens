@@ -138,8 +138,17 @@ class DataArguments:
     fps: float = 2.0
     fps_max_frames: Optional[int] = None
 
+    max_data_retries: int = 20
+
     raw_anno_path: Optional[str] = field(default=None)
     fixed_gaussian_sampling: bool = field(default=False)
     gaussian_filter_mean: Optional[float] = None
     gaussian_filter_std: Optional[float] = None
     target_size: int = 2500
+
+    prompt_template: str = field(
+        default="legacy",
+        metadata={
+            "help": "Prompt template style for grounding. 'legacy' uses the original TimeLens prompt; 'egcot' uses Evidence-Grounded CoT prompt with <answer> tags.",
+        },
+    )

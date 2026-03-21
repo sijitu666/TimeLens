@@ -41,6 +41,7 @@ report_to="none"
 # GRPO-specific parameters (L40 optimized)
 num_generations=4            # Reduced from 8 (major memory saver)
 temperature=1.0
+max_steps=100                # Can be increased for full training, 100 is for testing
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do

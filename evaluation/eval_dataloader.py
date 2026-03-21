@@ -22,6 +22,12 @@ def parse_args():
     parser.add_argument("--min_tokens", type=int, default=16)
     parser.add_argument("--total_tokens", type=int, default=3584)
     parser.add_argument("--fps", type=int, default=2)
+    parser.add_argument(
+        "--max_new_tokens",
+        type=int,
+        default=128,
+        help="Max tokens to generate for each sample. Lower is faster.",
+    )
 
     parser.add_argument("--dataset", required=True, help="Dataset name")
     parser.add_argument("--split", default="test")
@@ -39,6 +45,12 @@ def parse_args():
         default=42,
         help="Random seed for reproducibility. Default is 42.",
     )
+    parser.add_argument(
+        "--max_samples",
+        type=int,
+        default=0,
+        help="If > 0, only evaluate the first N samples (after chunking). Useful for quick sanity checks.",
+    )
     args = parser.parse_args()
     return args
 
@@ -51,6 +63,11 @@ if __name__ == "__main__":
 
     pred_path = f"{args.pred_path}_{args.index}.jsonl"
 
+    # Ensure output directory exists (pred_path may include nested dirs)
+    out_dir = os.path.dirname(os.path.abspath(pred_path))
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
+
     print(
         f"Dataset: {args.dataset}({args.split}) | Chunk: {args.chunk} | "
         f"Index: {args.index} | Output Path: {pred_path}"
@@ -61,12 +78,31 @@ if __name__ == "__main__":
     )
 
     # Load model
-    model = AutoModelForImageTextToText.from_pretrained(
-        args.model_path,
-        dtype=torch.bfloat16,
-        attn_implementation="flash_attention_2",
-        device_map=args.device,
-    ).eval()
+    # NOTE:
+    # - `transformers.from_pretrained` uses `torch_dtype`, not `dtype`.
+    # - Qwen models need `trust_remote_code=True`.
+    # - If args.model_path points to a PEFT adapter dir, try loading base + adapter.
+    adapter_config_path = os.path.join(args.model_path, "adapter_config.json")
+    if os.path.exists(adapter_config_path):
+        from peft import PeftConfig, PeftModel
+
+        peft_config = PeftConfig.from_pretrained(args.model_path)
+        base_model = AutoModelForImageTextToText.from_pretrained(
+            peft_config.base_model_name_or_path,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            device_map=args.device,
+            trust_remote_code=True,
+        ).eval()
+        model = PeftModel.from_pretrained(base_model, args.model_path).eval()
+    else:
+        model = AutoModelForImageTextToText.from_pretrained(
+            args.model_path,
+            torch_dtype=torch.bfloat16,
+            attn_implementation="flash_attention_2",
+            device_map=args.device,
+            trust_remote_code=True,
+        ).eval()
 
     # Load processor (model-specific)
     processor = AutoProcessor.from_pretrained(
@@ -84,6 +120,8 @@ if __name__ == "__main__":
     # 2. long videos are more likely to cause OOM, so we put them first
     annos.sort(key=lambda x: x["duration"], reverse=True)
     annos = annos[args.index :: args.chunk]
+    if args.max_samples and args.max_samples > 0:
+        annos = annos[: args.max_samples]
 
     dataset = GroundingDataset(annos, processor, args)
     data_loader = DataLoader(
@@ -112,7 +150,7 @@ if __name__ == "__main__":
             temperature=None,
             top_p=None,
             top_k=None,
-            max_new_tokens=512,
+            max_new_tokens=args.max_new_tokens,
         )
 
         generated_ids_trimmed = [

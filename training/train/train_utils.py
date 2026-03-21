@@ -35,8 +35,9 @@ def print_trainable_parameters(model, training_args):
     llm_trainable = 0
     lora_params = 0
 
-    if training_args.lora_enable:
-        model = model.base_model.model
+    if training_args.lora_enable and hasattr(model, "base_model"):
+        base_model = model.base_model
+        model = getattr(base_model, "model", base_model)
 
     for name, param in model.named_parameters():
         param_count = numel(param)
