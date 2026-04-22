@@ -13,3 +13,5 @@ __pycache__
 /output
 /tensorboard
 /wandb
+
+/pack_20260319_124654/*

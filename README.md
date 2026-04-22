@@ -210,7 +210,7 @@ The evaluation script is [`scripts/eval_timelens_bench.sh`](./scripts/eval_timel
 ```bash
 model_path="TencentARC/TimeLens-8B" bash scripts/eval_timelens_bench.sh
 
-CUDA_VISIBLE_DEVICES=2,3,5,6 FPS=1 total_token=8192 model_path="/home/zhiwei/robotics/vlm/TimeLens/model/TimeLens-8B" bash scripts/eval_timelens_bench.sh
+CUDA_VISIBLE_DEVICES=2,3,4,5 FPS=1 total_token=8192 model_path="/home/zhiwei/robotics/vlm/TimeLens/model/TimeLens-8B" bash scripts/eval_timelens_bench.sh
 ```
 
 **Example 2**: Evaluate TimeLens-7B on specific datasets with specific GPUs
